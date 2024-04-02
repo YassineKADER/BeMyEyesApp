@@ -1,15 +1,18 @@
 import { StyleSheet } from 'react-native';
-
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import { Text, View} from '@/components/Themed';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function TabOneScreen() {
   return (
+    <GestureDetector gesture={Gesture.Tap().numberOfTaps(5).maxDelay(500).onStart((e)=>console.log(e))}>
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="app/(tabs)/index.tsx" />
     </View>
+    </GestureDetector>
   );
 }
 
