@@ -1,10 +1,15 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, BackHandler} from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Text, View} from '@/components/Themed';
+import { useEffect } from 'react';
 
 
 
 export default function TabOneScreen() {
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => backHandler.remove();
+  }, []);
   return (
     <GestureDetector gesture={Gesture.Tap().numberOfTaps(5).maxDelay(500).onStart((e)=>console.log(e))}>
     <View style={styles.container}>
