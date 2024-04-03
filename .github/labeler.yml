@@ -1,0 +1,36 @@
+# GitHub Actions Labeler Configuration
+
+# Bugfixes
+bugfix:
+  description: "Changes in the app directory"
+  paths:
+    - "app/**/*"
+
+# New Features
+feature:
+  description: "Changes in the components directory"
+  paths:
+    - "components/**/*"
+
+# Documentation Updates
+docs:
+  description: "Changes in the gestures directory"
+  paths:
+    - "gestures/**/*"
+
+# Tests
+test:
+  description: "Test-related changes"
+  paths:
+    - "**/*_test*.*"  # Matches files ending with "_test" or "test"
+
+# Configuration Files
+config:
+  description: "Configuration file changes"
+  paths:
+    - ".gitignore"
+    - "app.json"
+    - "babel.config.js"
+    - "expo-env.d.ts"
+    - "package*.json"
+    - "tsconfig.json"
