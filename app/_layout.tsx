@@ -51,7 +51,7 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
     <GestureHandlerRootView style={{flex:1}}>
       <Stack>
-        <Stack.Screen name="(home)" options={{ headerShown: false , headerLeft:()=>null}} />
+        <Stack.Screen name="(home)" options={{ headerShown: false}} />
       </Stack>
     </GestureHandlerRootView>
     </ThemeProvider>
