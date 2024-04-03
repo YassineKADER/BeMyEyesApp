@@ -1,8 +1,8 @@
-import { StyleSheet, BackHandler} from 'react-native';
+import { StyleSheet, BackHandler, ToastAndroid} from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Text, View} from '@/components/Themed';
 import { useEffect } from 'react';
-
+import loginHandler from '../../gestures/loginGestures';
 
 
 export default function TabOneScreen() {
@@ -10,8 +10,11 @@ export default function TabOneScreen() {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
     return () => backHandler.remove();
   }, []);
+
+
+
   return (
-    <GestureDetector gesture={Gesture.Tap().numberOfTaps(5).maxDelay(500).onStart((e)=>console.log(e))}>
+    <GestureDetector gesture={loginHandler}>
     <View style={styles.container}>
       <Text style={styles.title}>👋 Hey there! If you can read this, you're probably here to help people. Click 7 times to switch to helper mode! 🌟</Text>
     </View>
