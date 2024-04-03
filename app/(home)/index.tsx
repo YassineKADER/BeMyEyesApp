@@ -2,6 +2,8 @@ import { StyleSheet } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Text, View} from '@/components/Themed';
 
+
+
 export default function TabOneScreen() {
   return (
     <GestureDetector gesture={Gesture.Tap().numberOfTaps(5).maxDelay(500).onStart((e)=>console.log(e))}>
