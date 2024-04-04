@@ -1,36 +1,30 @@
-# GitHub Actions Labeler Configuration
+# .github/labeler.yml
 
-# Bugfixes
-bugfix:
-  description: "Changes in the app directory"
-  paths:
-    - "app/**/*"
+# Add 'root' label to any root file changes
+root:
+- '*'
 
-# New Features
+# Add 'AnyChange' label to any changes within the entire repository
+AnyChange:
+- '**'
+
+# Add 'Documentation' label to any changes within 'docs' folder or any subfolders
+Documentation:
+- 'docs/**/*'
+
+# Add 'source' label to any change to .ts or .tsx files within the source dir EXCEPT for the docs sub-folder
+source:
+- 'src/**/*.{ts,tsx}'
+- '!src/docs/*'
+
+# Add 'feature' label to any PR where the head branch name starts with `feature` or has a `feature` section in the name
 feature:
-  description: "Changes in the components directory"
-  paths:
-    - "components/**/*"
+ - '^feature'
+ - 'feature'
 
-# Documentation Updates
-docs:
-  description: "Changes in the gestures directory"
-  paths:
-    - "gestures/**/*"
+ bugfix:
+- '**/fixes/*'
 
-# Tests
-test:
-  description: "Test-related changes"
-  paths:
-    - "**/*_test*.*"  # Matches files ending with "_test" or "test"
-
-# Configuration Files
-config:
-  description: "Configuration file changes"
-  paths:
-    - ".gitignore"
-    - "app.json"
-    - "babel.config.js"
-    - "expo-env.d.ts"
-    - "package*.json"
-    - "tsconfig.json"
+# Add 'release' label to any PR that is opened against the `main` branch
+release:
+ - 'main'
