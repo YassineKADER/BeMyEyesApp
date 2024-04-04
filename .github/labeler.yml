@@ -1,36 +1,46 @@
-# GitHub Actions Labeler Configuration
+# Add 'root' label to any root file changes
+root:
+- changed-files:
+  - any-glob-to-any-file: '*'
 
-# Bugfixes
-bugfix:
-  description: "Changes in the app directory"
-  paths:
-    - "app/**/*"
+# Add 'AnyChange' label to any changes within the entire repository
+AnyChange:
+- changed-files:
+  - any-glob-to-any-file: '**'
 
-# New Features
+# Add 'Documentation' label to any changes within 'docs' folder or any subfolders
+Documentation:
+- changed-files:
+  - any-glob-to-any-file: docs/**
+
+# Add 'Documentation' label to any file changes within 'docs' folder
+Documentation:
+- changed-files:
+  - any-glob-to-any-file: docs/*
+
+# Add 'Documentation' label to any file changes within 'docs' or 'guides' folders
+Documentation:
+- changed-files:
+  - any-glob-to-any-file:
+    - docs/*
+    - guides/*
+
+# Add 'Documentation' label to any change to .md files within the entire repository 
+Documentation:
+- changed-files:
+  - any-glob-to-any-file: '**/*.md'
+
+# Add 'source' label to any change to .ts or .tsx files within the source dir EXCEPT for the docs sub-folder
+source:
+- all:
+  - changed-files:
+    - any-glob-to-any-file: 'app/**/*.{ts,tsx}'
+    - all-globs-to-all-files: '!app/docs/*'
+
+# Add 'feature' label to any PR where the head branch name starts with `feature` or has a `feature` section in the name
 feature:
-  description: "Changes in the components directory"
-  paths:
-    - "components/**/*"
+ - head-branch: ['^feature', 'feature']
 
-# Documentation Updates
-docs:
-  description: "Changes in the gestures directory"
-  paths:
-    - "gestures/**/*"
-
-# Tests
-test:
-  description: "Test-related changes"
-  paths:
-    - "**/*_test*.*"  # Matches files ending with "_test" or "test"
-
-# Configuration Files
-config:
-  description: "Configuration file changes"
-  paths:
-    - ".gitignore"
-    - "app.json"
-    - "babel.config.js"
-    - "expo-env.d.ts"
-    - "package*.json"
-    - "tsconfig.json"
+# Add 'release' label to any PR that is opened against the `main` branch
+release:
+ - base-branch: 'main'
