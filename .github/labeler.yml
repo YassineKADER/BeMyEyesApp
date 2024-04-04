@@ -2,26 +2,26 @@
 
 # Add 'root' label to any root file changes
 root:
-- '*'
+  - '*'
 
 # Add 'AnyChange' label to any changes within the entire repository
 AnyChange:
-- '**'
+  - '**'
 
 # Add 'Documentation' label to any changes within 'docs' folder or any subfolders
 Documentation:
-- 'docs/**/*'
+  - 'docs/**/*'
 
 # Add 'source' label to any change to .ts or .tsx files within the source dir EXCEPT for the docs sub-folder
 source:
-- 'app/**/*.{ts,tsx}'
-- '!src/docs/*'
+  - 'app/**/*.{ts,tsx}'
+  - '!src/docs/*'
 
 # Add 'feature' label to any PR where the head branch name starts with `feature` or has a `feature` section in the name
 feature:
- - '^feature'
- - 'feature'
+  - '^feature'
+  - 'feature'
 
 # Add 'release' label to any PR that is opened against the `main` branch
 release:
- - 'main'
+  - 'main'
