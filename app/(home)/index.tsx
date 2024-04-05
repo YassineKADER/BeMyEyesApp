@@ -3,14 +3,22 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Text, View} from '@/components/Themed';
 import { useEffect } from 'react';
 import loginHandler from '../../gestures/loginGestures';
-
-
+import * as mobilenet from '@tensorflow-models/mobilenet';
+import * as tf from '@tensorflow/tfjs';
+import { bundleResourceIO } from '@tensorflow/tfjs-react-native';
 export default function TabOneScreen() {
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
     return () => backHandler.remove();
   }, []);
 
+    useEffect(() => {
+    (async function mango() {
+      let myModel;
+        await tf.ready()
+        myModel = await mobilenet.load();
+    })();
+  }, []);
 
 
   return (
