@@ -1,16 +1,18 @@
-import { StyleSheet, BackHandler, ToastAndroid } from "react-native";
+import { StyleSheet, BackHandler, ToastAndroid, Pressable } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { Text, View } from "@/components/Themed";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import loginHandler from "../../gestures/loginGestures";
 import * as FileSystem from "expo-file-system";
 import * as mobilenet from "@tensorflow-models/mobilenet";
-
+import { AutoFocus, Camera, CameraType } from "expo-camera";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-react-native";
 import { decodeJpeg } from "@tensorflow/tfjs-react-native";
 export default function TabOneScreen() {
+  const camera = useRef<Camera>(null);
   const [model, setModel] = useState<mobilenet.MobileNet>();
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
@@ -18,6 +20,33 @@ export default function TabOneScreen() {
     );
     return () => backHandler.remove();
   }, []);
+  useEffect(()=>{
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await Camera.requestMicrophonePermissionsAsync();
+      console.log(status);
+      console.log(permission);
+    })();
+  },[])
+
+  const test =()=>{ (async ()=>{
+    if(camera.current){
+      try{
+        // await camera.current.recordAsync();
+        // await Camera.requestCameraPermissionsAsync()
+        await camera.current._onCameraReady();
+        await camera.current.resumePreview();
+        await camera.current.forceUpdate();
+        console.log(camera.current.componentDidMount);
+        let picture = await camera.current.takePictureAsync({quality:1,base64:true});
+        console.log(picture.uri);
+      }
+      catch(err){
+        console.log(err);
+      }
+    }
+  })()}
+
   const classifyImage = async (imgUri: string) => {
     try {
       const fileUri = imgUri;
@@ -50,14 +79,19 @@ export default function TabOneScreen() {
   }, []);
   const [isConnected, setIsConnected] = useState(false);
 
+  const takepic = Gesture.Tap().numberOfTaps(2).maxDelay(700).onStart(()=>test());
+
   return (
-    <GestureDetector gesture={loginHandler}>
+    <GestureDetector gesture={takepic}>
       <View style={styles.container}>
         <Text style={styles.title}>
           👋 Hey there! If you can read this, you're probably here to help
           people. Click 7 times to switch to helper mode! 🌟
         </Text>
         <Text>{model !== null ? "Model Ready !" : ""}</Text>
+        <Camera ref={camera} type={CameraType.back} ratio="16:9">
+        </Camera>
+        <Pressable onPress={()=>test()}><Text>takepic</Text></Pressable>
       </View>
     </GestureDetector>
   );
