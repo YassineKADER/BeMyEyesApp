@@ -42,6 +42,7 @@ export default function TabOneScreen() {
         console.log("Did mount "+camera.current.componentDidMount);
         let picture = await camera.current.takePictureAsync({quality:1,base64:true});
         console.log(picture.uri);
+        await classifyImage(picture.uri);
       }
       catch(err){
         console.log(err);
@@ -72,6 +73,7 @@ export default function TabOneScreen() {
       await tf.ready();
       let mmodel = await mobilenet.load({ version: 2.0, alpha: 0.5 });
       setModel(mmodel);
+      await classifyImage("file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FbeMyEyes-f806a8ca-c77e-416f-962e-a76cc76f0d81/Camera/79635a25-1814-4e97-a793-5d4c24281539.jpg")
     } catch (er) {
       console.log(er);
     }
