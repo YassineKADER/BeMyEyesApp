@@ -1,11 +1,11 @@
-import { StyleSheet, BackHandler, ToastAndroid, Pressable } from "react-native";
+import { StyleSheet, BackHandler, ToastAndroid, Pressable, PermissionsAndroid, TouchableOpacity } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { Text, View } from "@/components/Themed";
 import { useEffect, useRef, useState } from "react";
 import loginHandler from "../../gestures/loginGestures";
 import * as FileSystem from "expo-file-system";
 import * as mobilenet from "@tensorflow-models/mobilenet";
-import { AutoFocus, Camera, CameraType } from "expo-camera";
+import { AutoFocus, Camera, CameraType, FlashMode } from "expo-camera";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-react-native";
 import { decodeJpeg } from "@tensorflow/tfjs-react-native";
@@ -20,15 +20,16 @@ export default function TabOneScreen() {
     );
     return () => backHandler.remove();
   }, []);
-  useEffect(()=>{
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      await Camera.requestMicrophonePermissionsAsync();
-      console.log(status);
-      console.log(permission);
-    })();
-  },[])
-
+  // useEffect(()=>{
+  //   (async () => {
+  //     const { status } = await Camera.requestCameraPermissionsAsync();
+  //     await Camera.requestMicrophonePermissionsAsync();
+  //     // await Camera.useCameraPermissions();
+  //     console.log(status);
+  //     // console.log(permission);
+  //   })();
+  // },[])
+  const [loadcam,setLoadcam] = useState(false)
   const test =()=>{ (async ()=>{
     if(camera.current){
       try{
@@ -37,7 +38,8 @@ export default function TabOneScreen() {
         await camera.current._onCameraReady();
         await camera.current.resumePreview();
         await camera.current.forceUpdate();
-        console.log(camera.current.componentDidMount);
+        // console.log(camera.current.getSupportedRatiosAsync());
+        console.log("Did mount "+camera.current.componentDidMount);
         let picture = await camera.current.takePictureAsync({quality:1,base64:true});
         console.log(picture.uri);
       }
@@ -80,19 +82,25 @@ export default function TabOneScreen() {
   const [isConnected, setIsConnected] = useState(false);
 
   const takepic = Gesture.Tap().numberOfTaps(2).maxDelay(700).onStart(()=>test());
-
+  const [oncameraready, setOncameraready] = useState(false);
   return (
     <GestureDetector gesture={takepic}>
-      <View style={styles.container}>
-        <Text style={styles.title}>
-          👋 Hey there! If you can read this, you're probably here to help
-          people. Click 7 times to switch to helper mode! 🌟
-        </Text>
-        <Text>{model !== null ? "Model Ready !" : ""}</Text>
-        <Camera ref={camera} type={CameraType.back} ratio="16:9">
+      <Camera style={{flex:1}} ref={camera}>
+        <View style={styles.container}>
+          <Text style={styles.title}>
+            👋 Hey there! If you can read this, you're probably here to help
+            people. Click 7 times to switch to helper mode! 🌟
+          </Text>
+          <Text>{model !== null ? "Model Ready !" : ""}</Text>
+          <Pressable onPress={()=>test()}><Text>takepic</Text></Pressable>
+          <Text>is camera ready: {(oncameraready)?"true":"flase"}</Text>
+          {/* {loadcam && <Camera ref={camera} type={CameraType.back}  focusable={true} focusDepth={1} useCamera2Api={true} ratio="16:9" onCameraReady={()=>setOncameraready(true)} onMountError={(error) => {
+            console.log("cammera error", error);
+          }} flashMode={FlashMode.torch}>
+          </Camera>} */}
+          <Pressable onPress={()=>{setLoadcam(true);console.log(camera.current?.componentDidMount)}}><Text>loadcam</Text></Pressable>
+        </View>
         </Camera>
-        <Pressable onPress={()=>test()}><Text>takepic</Text></Pressable>
-      </View>
     </GestureDetector>
   );
 }
@@ -108,6 +116,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     fontWeight: "normal",
+  },  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
   },
   separator: {
     marginVertical: 30,
