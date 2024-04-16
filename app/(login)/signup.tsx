@@ -1,16 +1,39 @@
-import { StyleSheet } from 'react-native';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { Text, View} from '@/components/Themed';
-import { TextInput } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, TextInput, TouchableOpacity, Text, ScrollView, Image} from 'react-native';
 
-export default function TabOneScreen() {
+export default function LoginScreen() {
   return (
-    // <GestureDetector>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
+    >
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput style={styles.input} placeholder='type here....'></TextInput>
+<Image
+          source={require("../../assets/images/logo.png")}
+          style={{ height: 100, margin:5}} 
+        />
+      <Text style={styles.title}>SignUp</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        placeholderTextColor="gray"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Retype Email"
+        placeholderTextColor="gray"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="gray"
+        secureTextEntry
+      />
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
-    // </GestureDetector>
+</ScrollView>
   );
 }
 
@@ -19,23 +42,32 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white'
   },
   title: {
-    width:"80%",
-    textAlign:"center",
     fontSize: 18,
-    fontWeight: 'normal',
-  },input: {
-    width: "80%",
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    width: '80%',
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
+    borderRadius: 5,
     padding: 10,
-    color:'white'
+    marginBottom: 10,
+    color: 'black',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  button: {
+    backgroundColor: 'black',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
+
