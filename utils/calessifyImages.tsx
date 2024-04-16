@@ -23,7 +23,3 @@ export async function classifyImage(imgUri: string|null|undefined, model:mobilen
     }
     return
 }
-
-
-
-   

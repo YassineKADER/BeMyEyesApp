@@ -8,6 +8,7 @@ import "@tensorflow/tfjs-react-native";
 import { modelLoader } from "@/utils/modelLoader";
 import { takePicture } from "@/utils/takePicture";
 import { classifyImage } from "@/utils/calessifyImages";
+import loginHandler from "@/gestures/loginGestures";
 export default function TabOneScreen() {
   const camera = useRef<Camera>(null);
   const [model, setModel] = useState<mobilenet.MobileNet>();
@@ -31,10 +32,11 @@ export default function TabOneScreen() {
   modelLoader(setModel);
   }, []);
 
-  const takepic = Gesture.Tap().numberOfTaps(2).maxDelay(700).onStart(()=>{takePicture(camera,permission).then((s)=>classifyImage(s,model).then((ss)=>{(ss)?ToastAndroid.show(ss.toString()+"",230):console.log(ss)}))});
+  const takepic = Gesture.Tap().minPointers(1).numberOfTaps(2).maxDelay(700).onStart(()=>{takePicture(camera,permission).then((s)=>{console.log(s);classifyImage(s,model).then((ss)=>{console.log(ss);(ss)?ToastAndroid.show(ss.toString()+"",230):console.log(ss)})})});
+  const composed = Gesture.Race(takepic, loginHandler);
   const [oncameraready, setOncameraready] = useState(false);
   return (
-    <GestureDetector gesture={takepic}>
+    <GestureDetector gesture={composed}>
       <Camera style={{flex:1}} ref={camera}>
         <View style={styles.container}>
           <Text style={styles.title}>
@@ -42,9 +44,7 @@ export default function TabOneScreen() {
             people. Click 7 times to switch to helper mode! 🌟
           </Text>
           <Text>{model !== null ? "Model Ready !" : ""}</Text>
-          <Pressable onPress={()=>takePicture(camera, permission)}><Text>takepic</Text></Pressable>
           <Text>is camera ready: {(oncameraready)?"true":"flase"}</Text>
-         <Pressable onPress={()=>{setLoadcam(true);console.log(camera.current?.componentDidMount)}}><Text>loadcam</Text></Pressable>
         </View>
         </Camera>
     </GestureDetector>
