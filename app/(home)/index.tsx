@@ -3,12 +3,18 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { Text, View } from "@/components/Themed";
 import { useEffect, useRef, useState } from "react";
 import * as mobilenet from "@tensorflow-models/mobilenet";
-import { Camera} from "expo-camera";
+import { Camera } from "expo-camera";
 import "@tensorflow/tfjs-react-native";
 import { modelLoader } from "@/utils/modelLoader";
 import { takePicture } from "@/utils/takePicture";
-import { classifyImage } from "@/utils/calessifyImages";
+import { classifyImage } from "@/utils/classifyImagesOffline";
 import loginHandler from "@/gestures/loginGestures";
+import { classifyImageApi } from "@/utils/classifyImages";
+
+
+
+
+
 export default function TabOneScreen() {
   const camera = useRef<Camera>(null);
   const [model, setModel] = useState<mobilenet.MobileNet>();
@@ -20,33 +26,33 @@ export default function TabOneScreen() {
     );
     return () => backHandler.remove();
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await Camera.requestMicrophonePermissionsAsync();
       console.log(status);
     })();
-  },[])
-  const [loadcam,setLoadcam] = useState(false)
+  }, [])
+  const [loadcam, setLoadcam] = useState(false)
   useEffect(() => {
-  modelLoader(setModel);
+    modelLoader(setModel);
   }, []);
 
-  const takepic = Gesture.Tap().minPointers(1).numberOfTaps(2).maxDelay(700).onStart(()=>{takePicture(camera,permission).then((s)=>{console.log(s);classifyImage(s,model).then((ss)=>{console.log(ss);(ss)?ToastAndroid.show(ss.toString()+"",230):console.log(ss)})})});
+  const takepic = Gesture.Tap().minPointers(1).numberOfTaps(2).maxDelay(700).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s).then((ss) => { console.log(ss); (ss) ? ToastAndroid.show(ss.toString() + "", 230) : console.log(ss) }) }) });
   const composed = Gesture.Race(takepic, loginHandler);
   const [oncameraready, setOncameraready] = useState(false);
   return (
     <GestureDetector gesture={composed}>
-      <Camera style={{flex:1}} ref={camera}>
+      <Camera style={{ flex: 1 }} ref={camera}>
         <View style={styles.container}>
           <Text style={styles.title}>
             👋 Hey there! If you can read this, you're probably here to help
             people. Click 7 times to switch to helper mode! 🌟
           </Text>
           <Text>{model !== null ? "Model Ready !" : ""}</Text>
-          <Text>is camera ready: {(oncameraready)?"true":"flase"}</Text>
+          <Text>is camera ready: {(oncameraready) ? "true" : "flase"}</Text>
         </View>
-        </Camera>
+      </Camera>
     </GestureDetector>
   );
 }
@@ -62,7 +68,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     fontWeight: "normal",
-  },  camera: {
+  }, camera: {
     flex: 1,
   },
   buttonContainer: {
