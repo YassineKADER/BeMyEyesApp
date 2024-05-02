@@ -1,3 +1,4 @@
 export default {
-  API_URL: "https://accessible-some-difficult-directive.trycloudflare.com"
+  API_URL: "http://192.168.100.24:3000"
+
 }

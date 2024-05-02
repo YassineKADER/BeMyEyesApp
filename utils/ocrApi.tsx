@@ -1,13 +1,11 @@
 import api from "@/constants/api"
 import * as FileSystem from "expo-file-system"
 
-export async function classifyImageApi(imageUri: string | undefined) {
+export async function ocrApi(imageUri: string | undefined) {
   const apiUrl = api.API_URL + "/v1/api/imagenet"; // replace with your server URL
   fetch(api.API_URL).then(res => res.text()).then(r => console.log(r))
   console.log(apiUrl)
   if (imageUri) {
-    let response = await fetch(imageUri);
-
     let formData = new FormData();
     formData.append('image', {
       uri: imageUri,

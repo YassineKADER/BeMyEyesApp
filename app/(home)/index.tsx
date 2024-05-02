@@ -38,7 +38,7 @@ export default function TabOneScreen() {
     modelLoader(setModel);
   }, []);
 
-  const takepic = Gesture.Tap().minPointers(1).numberOfTaps(2).maxDelay(700).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s).then((ss) => { console.log(ss); (ss) ? ToastAndroid.show(ss.toString() + "", 230) : console.log(ss) }) }) });
+  const takepic = Gesture.Tap().minPointers(1).numberOfTaps(2).maxDelay(700).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s).then((ss) => { console.log(ss); (ss) ? ToastAndroid.show(ss + "", 230) : console.log(ss) }) }) });
   const composed = Gesture.Race(takepic, loginHandler);
   const [oncameraready, setOncameraready] = useState(false);
   return (
