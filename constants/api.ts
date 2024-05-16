@@ -1,4 +1,4 @@
 export default {
-  API_URL: "http://192.168.100.24:3000"
+  API_URL: "https://bemyeyes-backend-2r2lfrmw2a-uc.a.run.app"
 
 }
