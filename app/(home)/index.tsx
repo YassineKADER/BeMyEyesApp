@@ -1,41 +1,38 @@
-import { StyleSheet, BackHandler, ToastAndroid, Pressable, PermissionsAndroid, TouchableOpacity } from "react-native";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
+import { StyleSheet, BackHandler, ToastAndroid, Pressable, PermissionsAndroid, TouchableOpacity, Image } from "react-native";
+import { GestureDetector, Gesture, Directions } from "react-native-gesture-handler";
 import { Text, View } from "@/components/Themed";
 import { useEffect, useRef, useState } from "react";
 import { Camera } from "expo-camera";
 import { takePicture } from "@/utils/takePicture";
 import loginHandler from "@/gestures/loginGestures";
-import { classifyImageApi } from "@/utils/classifyImages";
+import { classifyImageApi, processAudio } from "@/utils/classifyImages";
 import * as Speech from 'expo-speech';
 import { Audio } from "expo-av";
 import { AndroidAudioEncoder, AndroidOutputFormat, IOSOutputFormat, Recording } from "expo-av/build/Audio";
-
-
-
+import { FlingGesture } from "react-native-gesture-handler/lib/typescript/handlers/gestures/flingGesture";
+import * as FileSystem from 'expo-file-system';
+import LottieView from 'lottie-react-native';
 
 export default function TabOneScreen() {
   const [recording, setRecording] = useState<Recording>()
   const startRecording = async () => {
     try {
       await Audio.requestPermissionsAsync();
+      // const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY)
       const { recording } = await Audio.Recording.createAsync({
-        isMeteringEnabled: true,
+        ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
         android: {
           ...Audio.RecordingOptionsPresets.HIGH_QUALITY.android,
-          extension: ".wav",
-          outputFormat: AndroidOutputFormat.DEFAULT,
-          audioEncoder: AndroidAudioEncoder.DEFAULT,
-          sampleRate: 16000
-        }, ios: {
+          sampleRate: 16000,
+        },
+        ios: {
           ...Audio.RecordingOptionsPresets.HIGH_QUALITY.ios,
-          extension: '.wav',
-          outputFormat: IOSOutputFormat.LINEARPCM,
+          sampleRate: 16000,
         },
         web: {
-          mimeType: 'audio/wav',
-          bitsPerSecond: 128000,
+          ...Audio.RecordingOptionsPresets.HIGH_QUALITY.web,
         },
-      })
+      });
       setRecording(recording)
       console.log("start recording...")
     } catch (err) {
@@ -44,18 +41,25 @@ export default function TabOneScreen() {
   }
   async function stopRecording() {
     console.log('Stopping recording..');
-    // setRecording(undefined);
+    setRecording(undefined);
     await recording?.stopAndUnloadAsync();
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
     });
     const uri = recording?.getURI();
+    if (uri) {
+      const da = await processAudio(uri)
+      console.log(da)
+      speak(da)
+    }
     console.log('Recording stopped and stored at', uri);
   }
   const camera = useRef<Camera>(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const speak = (text: string) => {
-    Speech.speak(text, { language: "english" });
+    setIsSpeaking(true)
+    Speech.speak(text, { language: "en-US", onDone: () => setIsSpeaking(false), onStopped: () => setIsSpeaking(false) });
   }
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -72,21 +76,30 @@ export default function TabOneScreen() {
     })();
   }, [])
   const [loadcam, setLoadcam] = useState(false)
-  const takepic = Gesture.Tap().minPointers(1).numberOfTaps(1).maxDelay(700).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s).then((ss) => { console.log(ss); (ss) ? speak(ss) : console.log(ss) }) }) });
-  const longPressGesture = Gesture.LongPress()
+  const takepic = Gesture.Tap().minPointers(1).numberOfTaps(1).maxDelay(300).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s, "").then((ss) => { console.log(ss); (ss) ? speak(ss) : console.log(ss) }) }) });
+  const takepicvision = Gesture.Fling().direction(Directions.UP).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s, "/vision").then((ss) => { console.log(ss); (ss) ? speak(ss) : console.log(ss) }) }) });
+  const longPressGesture = Gesture.LongPress().minDuration(1000)
     .onStart(startRecording)
     .onFinalize(stopRecording);
-  const composed = Gesture.Race(takepic, loginHandler, longPressGesture);
+  const composed = Gesture.Race(takepic, takepicvision, longPressGesture);
   const [oncameraready, setOncameraready] = useState(false);
+  const animation = useRef(null)
   return (
     <GestureDetector gesture={composed}>
       <Camera style={{ flex: 1 }} ref={camera}>
         <View style={styles.container}>
-          <Text style={styles.title}>
-            👋 Hey there! If you can read this, you're probably here to help
-            people. Click 7 times to switch to helper mode! 🌟
-          </Text>
-          <Text>is camera ready: {(oncameraready) ? "true" : "flase"}</Text>
+          <Image source={require("../../assets/images/logo.png")}
+            style={{ height: 100, margin: 5 }}
+          ></Image>
+          {isSpeaking && <LottieView
+            autoPlay
+            ref={animation}
+            style={{
+              width: 200,
+              height: 200,
+            }}
+            source={require('../../assets/animation.json')}
+          />}
         </View>
       </Camera>
     </GestureDetector>

@@ -37,8 +37,8 @@
 import api from "@/constants/api";
 import * as FileSystem from "expo-file-system";
 
-export async function classifyImageApi(imageUri: string | undefined) {
-  const apiUrl = api.API_URL + "/v1/api/gemini/vision"; // replace with your server URL
+export async function classifyImageApi(imageUri: string | undefined, route: string) {
+  const apiUrl = api.API_URL + "/v1/api/gemini" + route; // replace with your server URL
 
   if (imageUri) {
     let response = await fetch(imageUri);
@@ -60,6 +60,37 @@ export async function classifyImageApi(imageUri: string | undefined) {
     try {
       const res = await fetch(apiUrl, options);
       const data = await res.json();
+      return data['response'];
+    } catch (error) {
+      console.error("error here:" + error);
+      throw error;
+    }
+  }
+}
+export async function processAudio(audioUri: string) {
+  const apiUrl = api.API_URL + "/v1/api/gemini/audio"; // replace with your server URL
+
+  if (audioUri) {
+    let response = await fetch(audioUri);
+    let formData = new FormData();
+    formData.append('audio', {
+      uri: audioUri,
+      type: 'audio/wave',
+      name: 'audio.wav'
+    });
+
+    let options = {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+
+    try {
+      const res = await fetch(apiUrl, options);
+      const data = await res.json();
+      console.log(data)
       return data['response'];
     } catch (error) {
       console.error("error here:" + error);
