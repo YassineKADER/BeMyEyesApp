@@ -17,7 +17,7 @@ import * as Haptics from 'expo-haptics';
 
 export default function TabOneScreen() {
   const [recording, setRecording] = useState<Recording>()
-  const [textHistory, setTextHistory] = useState([]);
+  const [textHistory, setTextHistory] = useState<string[]>([]);
   const startRecording = async () => {
     try {
       await Audio.requestPermissionsAsync();
@@ -53,7 +53,7 @@ export default function TabOneScreen() {
     });
     const uri = recording?.getURI();
     if (uri) {
-      const da = await processAudio(uri)
+      const da = await processAudio(uri, textHistory)
       console.log(da)
       speak(da)
       setTextHistory((prevHistory) => [...prevHistory, da])
@@ -68,6 +68,9 @@ export default function TabOneScreen() {
     setIsSpeaking(true)
     Speech.speak(text, { language: "en-US", onDone: () => { setIsSpeaking(false), Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) }, onStopped: () => setIsSpeaking(false) });
   }
+  useEffect(() => {
+    speak("   Welcome to the Be My Eyes App! . Tap to use the image recognition service. Swipe up to use the SuperVision mode. Long press to record audio. Swipe down to replay the last message. You can replay this audio by swiping left or right.")
+  }, [])
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
@@ -86,10 +89,12 @@ export default function TabOneScreen() {
   const takepic = Gesture.Tap().minPointers(1).numberOfTaps(1).maxDelay(700).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s, "").then((ss) => { console.log(ss); (ss) ? speak(ss) : console.log(ss); (ss) && setTextHistory((prevHistory) => [...prevHistory, ss]) }) }) });
   const takepicvision = Gesture.Fling().direction(Directions.UP).onStart(() => { takePicture(camera, permission).then((s) => { console.log(s); classifyImageApi(s, "/vision").then((ss) => { console.log(ss); (ss) ? speak(ss) : console.log(ss); (ss) && setTextHistory((prevHistory) => [...prevHistory, ss]) }) }) });
   const replay = Gesture.Fling().direction(Directions.DOWN).onStart(() => { (textHistory.lenght != 0) && speak(textHistory[textHistory.length - 1]) });
+  const replayinstruction = Gesture.Fling().direction(Directions.RIGHT).onStart(() => { speak(" Tap to use the image recognition service. Swipe up to use the SuperVision mode. Long press to record audio. Swipe down to replay the last message. You can replay this audio by swiping left or right.") });
+  const replayinstruction2 = Gesture.Fling().direction(Directions.LEFT).onStart(() => { speak(" Tap to use the image recognition service. Swipe up to use the SuperVision mode. Long press to record audio. Swipe down to replay the last message. You can replay this audio by swiping left or right.") });
   const longPressGesture = Gesture.LongPress().minDuration(1000)
     .onStart(startRecording)
     .onFinalize(stopRecording);
-  const composed = Gesture.Race(takepic, takepicvision, longPressGesture, replay);
+  const composed = Gesture.Race(takepic, takepicvision, longPressGesture, replay, replayinstruction, replayinstruction2);
   const [oncameraready, setOncameraready] = useState(false);
   const animation = useRef(null)
   return (

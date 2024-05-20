@@ -67,7 +67,7 @@ export async function classifyImageApi(imageUri: string | undefined, route: stri
     }
   }
 }
-export async function processAudio(audioUri: string) {
+export async function processAudio(audioUri: string, history: string[]) {
   const apiUrl = api.API_URL + "/v1/api/gemini/audio"; // replace with your server URL
 
   if (audioUri) {
@@ -78,6 +78,8 @@ export async function processAudio(audioUri: string) {
       type: 'audio/wave',
       name: 'audio.wav'
     });
+    const historyJson = JSON.stringify(history);
+    formData.append('history', historyJson);
 
     let options = {
       method: 'POST',
