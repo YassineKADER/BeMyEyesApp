@@ -1,6 +1,6 @@
 #README
 
-# Project Title
+# BeMyEyes
 
 This is a React Native application built with Expo and TypeScript.
 
